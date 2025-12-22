@@ -59,6 +59,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import kotlin.getValue
+import kotlin.math.tan
 
 /**
  * NOTE: The resolution and field of view angles are values that have been queried for
@@ -410,10 +411,26 @@ class MainActivity : ComponentActivity() {
                      m10, m11, m12, m13,
                      m20, m21, m22, m23) = cameraPose.toMatrix4x4(matrix)
 
-                Matrix.perspectiveM(
+                val fov = viewpointFlow.value.fieldOfView
+                val near = 0.01f
+                val far = 10f
+                val left = tan(fov.angleLeft) * near
+                val right = tan(fov.angleRight) * near
+                val bottom = tan(fov.angleDown) * near
+                val top = tan(fov.angleUp) * near
+                Matrix.frustumM(
                     projectionMatrix.data, 0,
-                    90f, 1f,
-                    0.01f, 10f)
+                    left, right, bottom, top, near, far
+                )
+
+                val fx = 2f * near / (right - left)
+                val fy = 2f * near / (top - bottom)
+                val ppx = - (right + left) / (right - left) * width / 2
+                val ppy = - (top + bottom) / (top - bottom) * height / 2
+//                Matrix.perspectiveM(
+//                    projectionMatrix.data, 0,
+//                    90f, 1f,
+//                    0.01f, 10f)1
                 cameraPose.toMatrix4(cameraPoseMatrix)
                 Matrix.invertM(viewMatrix.data, 0, cameraPoseMatrix.data, 0)
                 Matrix.multiplyMM(
