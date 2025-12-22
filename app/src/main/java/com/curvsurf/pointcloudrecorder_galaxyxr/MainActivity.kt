@@ -455,7 +455,7 @@ class MainActivity : ComponentActivity() {
                         pointCount = minOf(pointCount + 1, 100_000)
                         dirtyCount++
                     }
-
+                    withContext(Dispatchers.Main) { viewModel.setPointCount(pointCount) }
                     renderer.pointCloudRenderPass.updatePoints(pointBuffer, pointCount, dirtyBegin, dirtyCount)
                 }
                 renderer.depthMapRenderPass.updateDepthMap(depthMap, maxDepth, width, height)

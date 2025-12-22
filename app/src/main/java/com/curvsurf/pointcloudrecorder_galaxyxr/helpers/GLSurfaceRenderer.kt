@@ -165,7 +165,6 @@ fun OpenGLSurfaceView(
             SurfaceView(context).apply {
                 background = null
                 holder.setFormat(PixelFormat.TRANSLUCENT)
-                setZOrderOnTop(true)
                 holder.addCallback(object: SurfaceHolder.Callback {
 
                     override fun surfaceCreated(holder: SurfaceHolder) {

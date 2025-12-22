@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -46,7 +48,7 @@ fun ControlPanelView(onSizeDetermined: (width: Int, height: Int) -> Unit,
 
     TransparentBorderedPanel(
         modifier = Modifier
-            .width(100.dp)
+            .wrapContentWidth()
             .wrapContentHeight()
             .onGloballyPositioned { layoutCoordinates ->
                 val size = layoutCoordinates.size
@@ -55,7 +57,7 @@ fun ControlPanelView(onSizeDetermined: (width: Int, height: Int) -> Unit,
             .padding(8.dp)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             MapDisplayPicker(displayMode = uiState.mapDisplayMode,
@@ -67,15 +69,28 @@ fun ControlPanelView(onSizeDetermined: (width: Int, height: Int) -> Unit,
             PointCloudVisibilitySwitch(checked = uiState.pointsVisible,
                                        onClick = viewModel::setPointVisible)
 
-            TextButton(onClick = viewModel::clearPoints) {
-                Text(text = "Clear All Points")
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.DarkGray.copy(alpha = 0.3f)
+                )
+            ) {
+                TextButton(
+                    onClick = viewModel::clearPoints
+                ) {
+                    Text(text = "Clear All Points", color = Color.White)
+                }
             }
-
-            TextButton(onClick = viewModel::exportPointCloud) {
-                if (uiState.exporting) {
-                    LinearProgressIndicator(progress = { exportProgress })
-                } else {
-                    Text(text = "Export Points to XYZ")
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.DarkGray.copy(alpha = 0.3f)
+                )
+            ) {
+                TextButton(onClick = viewModel::exportPointCloud) {
+                    if (uiState.exporting) {
+                        LinearProgressIndicator(progress = { exportProgress })
+                    } else {
+                        Text(text = "Export Points to XYZ", color = Color.White)
+                    }
                 }
             }
         }
@@ -118,24 +133,38 @@ private fun MapDisplayPicker(modifier: Modifier = Modifier,
 @Composable
 private fun RecordingSwitch(checked: Boolean,
                             onClick: (Boolean) -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.DarkGray.copy(alpha = 0.3f)
+        )
     ) {
-        Text(text = "Recording")
-        Switch(checked = checked, onCheckedChange = onClick)
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Recording", color = Color.White)
+            Switch(checked = checked, onCheckedChange = onClick)
+        }
     }
 }
 
 @Composable
 private fun PointCloudVisibilitySwitch(checked: Boolean,
                                        onClick: (Boolean) -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.DarkGray.copy(alpha = 0.3f)
+        )
     ) {
-        Text(text = "Show Point Cloud")
-        Switch(checked = checked, onCheckedChange = onClick)
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Show Point Cloud", color = Color.White)
+            Switch(checked = checked, onCheckedChange = onClick)
+        }
     }
 }
 
