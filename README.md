@@ -11,6 +11,13 @@ Android XR currently exposes depth data suitable for visualization, but not enou
 > This sample project was developed and tested specifically for **Galaxy XR**.
 > Although it may run on other Android XR-compatible devices, correct behavior **cannot be guaranteed**.
 
+### Basic Usage
+
+- When the app starts, two panel windows appear: a map display window at the top-left of your view, and a control panel near your left hand at rest.
+- The map display window follows your head to remain within your field of view, showing either the depth map or the confidence map depending on the selected mode.
+- The control panel can be brought closer by touching the middle finger and thumb of your left hand.
+- That’s all. The UI is intentionally minimal and designed to be self-explanatory.
+
 ## Background and Motivation
 
 Originally, this project was started as a counterpart to [the sample projects](https://github.com/CurvSurf/FindSurface-visionOS?tab=readme-ov-file#samples) we had previously developed for **Apple Vision Pro**. From our perspective, Apple Vision Pro does not expose any developer-accessible means to obtain *useful* raw 3D measurement data from the user's real environment, *such as raw feature points, depth maps, or point clouds*, other than meshes.
