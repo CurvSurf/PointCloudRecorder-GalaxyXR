@@ -484,11 +484,32 @@ class MainActivity : ComponentActivity() {
                     withContext(Dispatchers.Main) { viewModel.setExporting(true) }
                     shouldExportPointCloud = false
 
-                    exportBuffer.rewind()
-                    exportBuffer.put(pointBuffer)
-                    exportPointCloud(this@MainActivity, exportBuffer, pointCount, 0.5f) {
-                        viewModel.setExportProgress(it)
+                    val list = mutableListOf<Vector3>()
+                    for (i in 0 until width * height) {
+                        val z = depthMap.get(i)
+                        if (z <= 0f) continue
+
+//                        val confidence = (confidenceMap.get(i).toInt() and 0xFF).toFloat() / 255f
+//                        if (confidence <= 0.5f) continue
+
+                        val u = i % width
+                        val v = i / width
+
+                        val vx = (u - ppx) * z / fx
+                        val vy = (ppy - v) * z / fy
+                        val vz = -z
+
+                        val wx = m00 * vx + m01 * vy + m02 * vz + m03
+                        val wy = m10 * vx + m11 * vy + m12 * vz + m13
+                        val wz = m20 * vx + m21 * vy + m22 * vz + m23
+                        list.add(Vector3(wx, wy, wz))
                     }
+                    exportPointCloud(this@MainActivity, list) { viewModel.setExportProgress(it) }
+//                    exportBuffer.rewind()
+//                    exportBuffer.put(pointBuffer)
+//                    exportPointCloud(this@MainActivity, exportBuffer, pointCount, 0.5f) {
+//                        viewModel.setExportProgress(it)
+//                    }
                     withContext(Dispatchers.Main) {
                         viewModel.setExporting(false)
                     }

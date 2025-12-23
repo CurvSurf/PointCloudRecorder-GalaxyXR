@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
+import androidx.xr.runtime.math.Vector3
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedWriter
@@ -39,6 +40,31 @@ suspend fun exportPointCloud(context: Context,
                         writer.newLine()
                     }
                     progress((i + 1).toFloat() / pointCount.toFloat())
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                shareFile(context, file)
+            }
+        } catch (e: Exception) {
+            Log.e("FileExport", "Failed to save file", e)
+        }
+    }
+}
+
+suspend fun exportPointCloud(context: Context,
+                             pointList: List<Vector3>,
+                             progress: (Float) -> Unit) {
+    withContext(Dispatchers.IO) {
+        try {
+            val filename = "pointcloud_${getCurrentTimestampString()}.xyz"
+            val file = File(context.cacheDir, filename)
+            var i = 0
+            BufferedWriter(FileWriter(file)).use { writer ->
+                for (point in pointList) {
+                    writer.write("${point.x} ${point.y} ${point.z}\n")
+                    writer.newLine()
+                    progress((i++).toFloat() / pointList.size.toFloat())
                 }
             }
 
