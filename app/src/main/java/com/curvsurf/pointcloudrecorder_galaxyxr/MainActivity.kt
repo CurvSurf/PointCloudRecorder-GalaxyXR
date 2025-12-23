@@ -97,6 +97,10 @@ class MainActivity : ComponentActivity() {
         get() = uiState.value.pointsVisible
     private val AppViewModel.recordingEnabled: Boolean
         get() = uiState.value.recordingEnabled
+    private val AppViewModel.useAsymmetricFov: Boolean
+        get() = uiState.value.useAsymmetricFov
+    private val AppViewModel.exportTarget: ExportTarget
+        get() = uiState.value.exportTarget
 
     private lateinit var session: Session
     private lateinit var mapDisplayViewEntity: PanelEntity
@@ -182,6 +186,7 @@ class MainActivity : ComponentActivity() {
                             pointBufferIndex = 0
                             pointCount = 0
                             renderer.pointCloudRenderPass.updatePoints(pointBuffer, pointCount, 0, 0)
+                            viewModel.setPointCount(0)
                         }
                     }
                 }
@@ -411,26 +416,34 @@ class MainActivity : ComponentActivity() {
                      m10, m11, m12, m13,
                      m20, m21, m22, m23) = cameraPose.toMatrix4x4(matrix)
 
-                val fov = viewpointFlow.value.fieldOfView
-                val near = 0.01f
-                val far = 10f
-                val left = tan(fov.angleLeft) * near
-                val right = tan(fov.angleRight) * near
-                val bottom = tan(fov.angleDown) * near
-                val top = tan(fov.angleUp) * near
-                Matrix.frustumM(
-                    projectionMatrix.data, 0,
-                    left, right, bottom, top, near, far
-                )
+                var fx = fx
+                var fy = fy
+                var ppx = ppx
+                var ppy = ppy
+                if (viewModel.useAsymmetricFov) {
+                    val fov = viewpointFlow.value.fieldOfView
+                    val near = 0.01f
+                    val far = 10f
+                    val left = tan(fov.angleLeft) * near
+                    val right = tan(fov.angleRight) * near
+                    val bottom = tan(fov.angleDown) * near
+                    val top = tan(fov.angleUp) * near
+                    Matrix.frustumM(
+                        projectionMatrix.data, 0,
+                        left, right, bottom, top, near, far
+                    )
 
-                val fx = fx * 2f * near / (right - left)
-                val fy = fy * 2f * near / (top - bottom)
-                val ppx = ppx - (right + left) / (right - left) * width / 2
-                val ppy = ppy - (top + bottom) / (top - bottom) * height / 2
-//                Matrix.perspectiveM(
-//                    projectionMatrix.data, 0,
-//                    90f, 1f,
-//                    0.01f, 10f)1
+                    fx = fx * 2f * near / (right - left)
+                    fy = fy * 2f * near / (top - bottom)
+                    ppx -= (right + left) / (right - left) * width / 2
+                    ppy -= (top + bottom) / (top - bottom) * height / 2
+                } else {
+                    Matrix.perspectiveM(
+                        projectionMatrix.data, 0,
+                        90f, 1f,
+                        0.01f, 10f
+                    )
+                }
                 cameraPose.toMatrix4(cameraPoseMatrix)
                 Matrix.invertM(viewMatrix.data, 0, cameraPoseMatrix.data, 0)
                 Matrix.multiplyMM(
@@ -484,32 +497,38 @@ class MainActivity : ComponentActivity() {
                     withContext(Dispatchers.Main) { viewModel.setExporting(true) }
                     shouldExportPointCloud = false
 
-                    val list = mutableListOf<Vector3>()
-                    for (i in 0 until width * height) {
-                        val z = depthMap.get(i)
-                        if (z <= 0f) continue
+                    when (viewModel.exportTarget) {
+                        ExportTarget.ACCUMULATED_POINTS -> {
+                            exportBuffer.rewind()
+                            exportBuffer.put(pointBuffer)
+                            exportPointCloud(this@MainActivity, exportBuffer, pointCount, 0.5f) {
+                                viewModel.setExportProgress(it)
+                            }
+                        }
+                        ExportTarget.DEPTH_MAP -> {
+                            val list = mutableListOf<Vector3>()
+                            for (i in 0 until width * height) {
+                                val z = depthMap.get(i)
+                                if (z <= 0f) continue
 
-//                        val confidence = (confidenceMap.get(i).toInt() and 0xFF).toFloat() / 255f
-//                        if (confidence <= 0.5f) continue
+                                val u = i % width
+                                val v = i / width
 
-                        val u = i % width
-                        val v = i / width
+                                val vx = (u - ppx) * z / fx
+                                val vy = (ppy - v) * z / fy
+                                val vz = -z
 
-                        val vx = (u - ppx) * z / fx
-                        val vy = (ppy - v) * z / fy
-                        val vz = -z
-
-                        val wx = m00 * vx + m01 * vy + m02 * vz + m03
-                        val wy = m10 * vx + m11 * vy + m12 * vz + m13
-                        val wz = m20 * vx + m21 * vy + m22 * vz + m23
-                        list.add(Vector3(wx, wy, wz))
+                                val wx = m00 * vx + m01 * vy + m02 * vz + m03
+                                val wy = m10 * vx + m11 * vy + m12 * vz + m13
+                                val wz = m20 * vx + m21 * vy + m22 * vz + m23
+                                list.add(Vector3(wx, wy, wz))
+                            }
+                            exportPointCloud(
+                                this@MainActivity,
+                                list
+                            ) { viewModel.setExportProgress(it) }
+                        }
                     }
-                    exportPointCloud(this@MainActivity, list) { viewModel.setExportProgress(it) }
-//                    exportBuffer.rewind()
-//                    exportBuffer.put(pointBuffer)
-//                    exportPointCloud(this@MainActivity, exportBuffer, pointCount, 0.5f) {
-//                        viewModel.setExportProgress(it)
-//                    }
                     withContext(Dispatchers.Main) {
                         viewModel.setExporting(false)
                     }

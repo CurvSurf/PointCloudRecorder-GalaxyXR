@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -80,6 +81,13 @@ fun ControlPanelView(onSizeDetermined: (width: Int, height: Int) -> Unit,
                     Text(text = "Clear All Points", color = Color.White)
                 }
             }
+
+            AsymmetricFovSwitch(checked = uiState.useAsymmetricFov,
+                                onClick = viewModel::setUseAsymmetricFov)
+
+            ExportTargetPicker(exportTarget = uiState.exportTarget,
+                               onExportTargetChanged = viewModel::setExportTarget)
+
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color.DarkGray.copy(alpha = 0.3f)
@@ -164,6 +172,65 @@ private fun PointCloudVisibilitySwitch(checked: Boolean,
         ) {
             Text(text = "Show Point Cloud", color = Color.White)
             Switch(checked = checked, onCheckedChange = onClick)
+        }
+    }
+}
+
+@Composable
+private fun AsymmetricFovSwitch(checked: Boolean,
+                                onClick: (Boolean) -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.DarkGray.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Use Asymmetric FOV", color = Color.White)
+            Switch(checked = checked, onCheckedChange = onClick)
+        }
+    }
+}
+
+@Composable
+private fun ExportTargetPicker(modifier: Modifier = Modifier,
+                               exportTarget: ExportTarget,
+                               onExportTargetChanged: (ExportTarget) -> Unit) {
+    val items = ExportTarget.entries
+
+    @Composable
+    fun ItemLabel(exportTarget: ExportTarget) {
+        when (exportTarget) {
+            ExportTarget.DEPTH_MAP -> Text(text = "Depth Map",
+                maxLines = 1,
+                overflow = TextOverflow.Visible
+            )
+            ExportTarget.ACCUMULATED_POINTS -> Text(text = "Acc. Pts.",
+                maxLines = 1,
+                overflow = TextOverflow.Visible
+            )
+        }
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.DarkGray.copy(alpha = 0.3f)
+        ),
+        modifier = modifier
+    ) {
+        SingleChoiceSegmentedButtonRow {
+            items.forEachIndexed { index, target ->
+                SegmentedButton(
+                    modifier = Modifier.width(100.dp),
+                    selected = exportTarget == target,
+                    onClick = { onExportTargetChanged(target) },
+                    shape = SegmentedButtonDefaults.itemShape(index, items.size)) {
+                    ItemLabel(target)
+                }
+            }
         }
     }
 }

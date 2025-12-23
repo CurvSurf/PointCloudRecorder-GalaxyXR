@@ -17,11 +17,17 @@ enum class MapDisplayMode {
     DEPTH_MAP, CONFIDENCE_MAP
 }
 
+enum class ExportTarget {
+    DEPTH_MAP, ACCUMULATED_POINTS
+}
+
 data class UIState(
     val exporting: Boolean = false,
     val mapDisplayMode: MapDisplayMode = MapDisplayMode.DEPTH_MAP,
     val recordingEnabled: Boolean = true,
-    val pointsVisible: Boolean = true
+    val pointsVisible: Boolean = true,
+    val useAsymmetricFov: Boolean = false, // whether to use asymmetric FoV (RenderViewpoint's) or not (symmetric 90 degree FoV)
+    val exportTarget: ExportTarget = ExportTarget.ACCUMULATED_POINTS // whether to export accumulated points or the points converted from a single depth map
 )
 
 class AppViewModel: ViewModel() {
@@ -57,6 +63,14 @@ class AppViewModel: ViewModel() {
 
     fun setPointVisible(visible: Boolean) {
         _uiState.update { it.copy(pointsVisible = visible) }
+    }
+
+    fun setUseAsymmetricFov(use: Boolean) {
+        _uiState.update { it.copy(useAsymmetricFov = use) }
+    }
+
+    fun setExportTarget(target: ExportTarget) {
+        _uiState.update { it.copy(exportTarget = target) }
     }
 
     private val _exportProgress = MutableStateFlow(0f)
