@@ -423,10 +423,10 @@ class MainActivity : ComponentActivity() {
                     left, right, bottom, top, near, far
                 )
 
-                val fx = 2f * near / (right - left)
-                val fy = 2f * near / (top - bottom)
-                val ppx = - (right + left) / (right - left) * width / 2
-                val ppy = - (top + bottom) / (top - bottom) * height / 2
+                val fx = fx * 2f * near / (right - left)
+                val fy = fy * 2f * near / (top - bottom)
+                val ppx = ppx - (right + left) / (right - left) * width / 2
+                val ppy = ppy - (top + bottom) / (top - bottom) * height / 2
 //                Matrix.perspectiveM(
 //                    projectionMatrix.data, 0,
 //                    90f, 1f,
