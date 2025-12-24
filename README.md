@@ -161,7 +161,7 @@ At the time of writing, Android XR and Galaxy XR lack sufficient public document
 | ![symmetric](images/symmetric.gif) | ![asymmetric](images/asymmetric.gif) |
 | ![symmetric](images/symmetric.png) | ![asymmetric](images/asymmetric.png) |
 
-***Table 1.** Comparison of point cloud reconstructions using symmetric and asymmetric projection assumptions. Despite different projection models, both reconstructions exhibit similar surface distortions and fail to preserve the true spherical geometry.*
+***Table 1.** Comparison of point cloud reconstructions using symmetric and asymmetric projection assumptions. Despite different projection models, both reconstructions exhibit similar surface distortions and fail to preserve the true spherical geometry. All images above were rendered using [our Web-based tool](https://developers.curvsurf.com/WebDemo/).*
 
 In both reconstruction approaches, the resulting point clouds failed to faithfully represent the surface geometry of a **spherical object**.
 
@@ -208,7 +208,7 @@ It is possible that the APIs used in this experiment were never intended to supp
 
 ## Desired Improvements
 
-Android XR is still under active development (as of mid-December 2025, version 1.0.0-alphaXX). This platform currently lacks several capabilities necessary for deeper investigation and visualization.
+Android XR is still under active development (as of mid-December 2025, version 1.0.0-alpha). This platform currently lacks several capabilities necessary for deeper investigation and visualization.
 
 Some of the following limitations are critical, while others are merely wishlist items:
 
