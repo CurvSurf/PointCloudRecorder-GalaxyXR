@@ -179,7 +179,7 @@ For this reason, we consider it highly likely that the observed deformation orig
 
 Given the inherent distortion in the raw depth data, we concluded that directly using the data without filtering was not meaningful.
 
-Previously, we released FindSurface sample projects that runs on Google Android smartphones and Apple iPhones/iPads without LiDAR. These projects accumulate feature points to build a point cloud and detect geometry in real time. This approach is based on the fact that even though individual samples are noisy, the accumulated data tends to converge toward the true geometry under a roughly Gaussian error distribution (see [here (Android)]() and [here (iOS)](), if you are interested).
+Previously, we released FindSurface sample projects that runs on Google Android smartphones and Apple iPhones/iPads without LiDAR. These projects accumulate feature points to build a point cloud and detect geometry in real time. This approach is based on the fact that even though individual samples are noisy, the accumulated data tends to converge toward the true geometry under a roughly Gaussian error distribution (see [here (Android)](https://github.com/CurvSurf/ARPointCloudFindSurface) and [here (iOS)](https://github.com/CurvSurf/ARFeaturePointFindSurface), if you are interested).
 
 Inspired by this approach, we applied **Random sampling** to the depth map and used foveated sampling, collecting more samples near the center of the view.
 
@@ -202,7 +202,7 @@ As a result, we were forced to associate each depth map with the most recently p
 
 Assuming a maximum walking speed of 1.2 m/s, even a 17 ms mismatch results in a positional error of approximately 20 cm. While this is a simplified worst-case estimate, combined with the previously discussed issues, the result were unsatisfactory.
 
-At this point, we decided to abandon further attempts at integrating **FindSurface** on this project and instead publish our findings here.
+At this point, we decided to **abandon** further attempts at integrating **FindSurface** on this project and instead publish our findings here.
 
 It is possible that the APIs used in this experiment were never intended to support metric point cloud reconstruction, and that the observed limitations reflect design constraints rather than implementation flaws.
 
@@ -216,7 +216,7 @@ Some of the following limitations are critical, while others are merely wishlist
 
 - Depth map updates are slow and irregular. While not entirely unusable, this makes immersive depth-based experiences in dynamic environments extremely difficult.
 
-- Exposing motion-tracking feature points as a public API would be highly desirable. These points are already generated internally for tracking device motions so it would likely not be technically difficult to make the API public. It would unlock significant potential when combined with FindSurface (Again, see []() and [](), if interested).
+- Exposing motion-tracking feature points as a public API would be highly desirable. These points are already generated internally for tracking device motions so it would likely not be technically difficult to make the API public. It would unlock significant potential when combined with FindSurface (Again, see [here (Android)](https://github.com/CurvSurf/ARPointCloudFindSurface) and [here (iOS)](https://github.com/CurvSurf/ARFeaturePointFindSurface), if interested).
 
 
 ## Closing Remarks
