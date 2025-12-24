@@ -136,6 +136,7 @@ Separately, we attempted a deliberately naive and informal approach to estimate 
 
 The procedure was as follows:
 ![Don't laugh, I know it's ridiculous](images/primitive-triangle.png)
+
 ***Fig 2.** We had to make do with what we had.*
 
 1. Wearing the Galaxy XR headset, one extended both arms evenly while holding a tape measure, adjusting the tape so that both hands were just barely visible at the horizontal edges of the depth map.
@@ -196,6 +197,7 @@ However, another significant issue emerged.
 Crucially, `DepthMap` provides no timestamp, making it impossible to determine when a given depth map was captured relative to the viewpoint. (`PerceptionState` might be the key to the sync issue, but no publicly documented way to obtain it.)
 
 ![result](images/accumulated.gif)
+
 ***Fig 4.** The three-layered appearance of the spherical surface in the point cloud (ghosting artifacts) strongly suggests that samples acquired at different times were not consistently associated with the correct camera pose.*
 
 As a result, we were forced to associate each depth map with the most recently published `RenderViewpoint`. This led to visible ghosting artifacts, where samples from the same surface appeared slightly offset.
